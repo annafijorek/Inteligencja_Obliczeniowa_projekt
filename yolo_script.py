@@ -18,7 +18,6 @@ class logic:
         self.stage="down"
         self.time_limit = 1.5
         #reps- powtorzenia
-        #pose-pozycja docelowa np noga w gorze
 
 
     #liczenie kata
@@ -50,12 +49,12 @@ class logic:
         ai_frame=cv2.convertScaleAbs(frame,alpha=1.1,beta=0)
 
 
-        results = self.model(ai_frame, conf=0.3, device='cpu',verbose=False) #verbose- logi ai
+        results = self.model(ai_frame, conf=0.3, device='cpu',verbose=False)
         # device=0 oznacza użycie karty graficznej NVIDIA
         # results = model(frame, conf=0.5, device=0)
         msg = ""
         color = "#FFFFFF"
-        annotated_frame=frame.copy()   #ustawienie domyslne, jesli nie znajdzie osoby
+        annotated_frame=frame.copy()
 
 
         if results and results[0].keypoints is not None and len(results[0].keypoints.xy) > 0 :
@@ -97,10 +96,9 @@ class logic:
 
                     ]
 
-                    # zapisywanie wynikow
                     calculated_angles = {}
                     for label, pA, pW, pC in angles:
-                        # sprawdzenie czy punkty zostaly wykryte/ nie sa zerami
+
                         if np.any(pA) and np.any(pW) and np.any(pC):
                             ang = self.calculate_angle(pA, pW, pC)
                             calculated_angles[label] = ang
@@ -122,7 +120,7 @@ class logic:
 
                     if self.current_exercise == "Plank":
                         is_straight = (190>l_body_angle > 165) or (190>r_body_angle > 165)
-                        #arms_straight = (l_elbow_angle > 160) or (r_elbow_angle > 160)
+
                         arms_90 = (70 < l_elbow_angle < 110) or (70 < r_elbow_angle < 110)
                         is_horizontal = abs(l_shoulder[1] - l_hip[1]) < 100 or abs(r_shoulder[1] - r_hip[1]) < 100
                         not_floor = (l_hip[1] < l_ankle[1] - 20) or (r_hip[1] < r_ankle[1] - 20)
@@ -140,8 +138,6 @@ class logic:
                             msg = "Nikogo nie widze :(("
                             self.start_time=None
                     elif self.current_exercise == "JumpingJack":
-                        # msg=""
-                        # color=""
 
                         hands_up = l_wrist[1] < nose[1] and r_wrist[1] < nose[1]
                         shoulder_dist = np.linalg.norm(l_shoulder - r_shoulder)
@@ -177,6 +173,9 @@ class logic:
                                     self.stage = "down"
                                 msg = ""
                                 color = "#FFFF00"
+                        elif (current_time - self.rep_start_time) < self.time_limit:
+                            msg = f"Wynik: {self.reps}"
+                            color = "#00FF00"
                         else:
                             msg = "Powtorzenie wykonane niepoprawnie"
                             color = "#FFFF00"
@@ -192,23 +191,8 @@ class logic:
                     color = "#FFFF00"
                 except Exception as e:
                     print(f"Błąd: {e}")
-                    msg = "Blad"
+                    msg = ""
                     color = "#FFFF00"
 
             return annotated_frame, msg, color
 
-        # if found_anybody:
-        #     status_msg = "rozpoznano osobe"
-        #     color = (0, 255, 0)
-        # else:
-        #     status_msg = "szukanie osoby"
-        #     color = (0, 0, 255)
-        #
-        # # wyświetlanie obrazu z szkieletem YOLO
-        # #cv2.putText(frame, status_msg, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color, 2)
-        # annotated_frame = results[0].plot() if found_anybody else frame
-        # cv2.imshow("cwiczenia z pilatesu", annotated_frame)
-
-
-    # cap.release()
-    # cv2.destroyAllWindows()

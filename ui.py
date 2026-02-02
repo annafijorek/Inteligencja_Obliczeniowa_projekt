@@ -153,7 +153,7 @@ class Workout_App(ctk.CTk):
             # stale wymiary
             # frame = cv2.resize(annotated_frame, (800, 600))
             # frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # img_pil = Image.fromarray(frame_rgb)
+            # _pil = Image.fromarray(frame_rgb)
             # img_tk = ctk.CTkImage(light_image=img_pil, dark_image=img_pil, size=(800, 600))
 
             # wymiary obliczane
